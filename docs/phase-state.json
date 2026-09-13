@@ -1,0 +1,173 @@
+{
+  "current_phase": 1,
+  "phase_name": "Foundation",
+  "status": "not_started",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Foundation",
+      "srs_requirements": [
+        "FR-AUTH-001..004",
+        "FR-ADM-001..007",
+        "FR-STU-001"
+      ],
+      "dependencies": [],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 2,
+      "name": "Ingestion & Curriculum",
+      "srs_requirements": [
+        "FR-CON-001..004",
+        "FR-CUR-001..004"
+      ],
+      "dependencies": [
+        "Phase 1 SubjectInstances/Teachers"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 3,
+      "name": "Assessment & Bank",
+      "srs_requirements": [
+        "FR-QB-001..005"
+      ],
+      "dependencies": [
+        "Phase 2 active Topics/content"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 4,
+      "name": "Coverage Tracker & Diagnostics",
+      "srs_requirements": [
+        "FR-COV-001..004",
+        "FR-DIA-001..006",
+        "FR-ADM-008",
+        "FR-STU-003"
+      ],
+      "dependencies": [
+        "Phase 3 READY bank"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 5,
+      "name": "Grading",
+      "srs_requirements": [
+        "FR-GRD-001..007",
+        "FR-STU-006"
+      ],
+      "dependencies": [
+        "Phase 4 attempts",
+        "Phase 3 grading artifacts"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 6,
+      "name": "Learner Model",
+      "srs_requirements": [
+        "FR-TCH-003",
+        "FR-LRN-001..005"
+      ],
+      "dependencies": [
+        "Phase 5 valid evidence",
+        "Phase 1 rosters"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 7,
+      "name": "Planner",
+      "srs_requirements": [
+        "FR-PLN-001..008",
+        "FR-TCH-002",
+        "FR-STU-002..004"
+      ],
+      "dependencies": [
+        "Phase 6 mastery",
+        "Phase 1 exam/timetable/preferences",
+        "Phase 4 coverage"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 8,
+      "name": "Daily Learning, Quiz & Tutor",
+      "srs_requirements": [
+        "FR-DAY-001",
+        "FR-TUT-001..003",
+        "FR-PRC-001..003"
+      ],
+      "dependencies": [
+        "Phase 2",
+        "Phase 3",
+        "Phase 5",
+        "Phase 6",
+        "Phase 7"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    },
+    {
+      "phase": 9,
+      "name": "Recommendation, Intervention, Notifications & Reports",
+      "srs_requirements": [
+        "FR-REC-001",
+        "FR-INT-001..002",
+        "FR-NOT-001",
+        "FR-RPT-001..003",
+        "FR-ADM-009"
+      ],
+      "dependencies": [
+        "All core phases"
+      ],
+      "status": "not_started",
+      "plan_path": null,
+      "verification_report_path": null,
+      "implemented_at": null,
+      "verified_at": null,
+      "shipped_pr": null
+    }
+  ]
+}
