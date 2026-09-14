@@ -39,8 +39,16 @@ editing either one.
 │   └── verify-live/
 │       ├── SKILL.md                          Static SRS-ID trace + live-site check for shipped phases
 │       └── scripts/audit_phases.py
+├── rules/
+│   ├── general.md                             Always On: fixed stack, AI/deterministic boundary, testing/security pointers
+│   ├── backend.md                             Intended scope backend/** — structure, naming, security, lint/format/test tools
+│   ├── frontend.md                            Intended scope frontend/** — structure, naming, testing, lint/format/test tools
+│   └── deterministic-services.md              Intended scope backend/app/services/** and SRS_Doc/** — the AI/deterministic boundary, in detail
 ├── hooks/
-│   └── block-publish.sh                      PreToolUse hook script for push/PR confirmation
+│   ├── block-publish.sh                       PreToolUse hook script for push/PR confirmation
+│   ├── block_publish.py                       Python equivalent, referenced by hooks.json
+│   ├── block_srs_doc_edits.py                 PreToolUse hook: blocks any edit/write targeting SRS_Doc/
+│   └── format_on_write.py                     PostToolUse hook: best-effort Ruff/ESLint/Prettier auto-fix (no-op until Phase 1 exists)
 ├── hooks.json                                 Lifecycle hooks configuration
 └── README.md                                  This file
 ```
@@ -174,7 +182,47 @@ this one is referenced by name in the agent's prompt rather than a structured
 `skills:` frontmatter field — this repo's `.agents/*/agent.md` files use only
 `name` and `description` in frontmatter (see "Design notes" below).
 
-## The hook
+## The rules
+
+`.agents/rules/*.md` files hold coding standards derived from the SRS — the
+`.agents` counterpart of `.claude/rules/*.md`. Per the Antigravity Rules docs
+(`/docs/rules-workflows/`), rules live in the `.agents/rules` folder (with
+backward support for `.agent/rules`) as plain Markdown files (12,000
+character limit each), and each rule has an activation mode set **at the
+rule level**: Manual (`@mention`), Always On, Model Decision, or Glob
+(applied to files matching a pattern, e.g. `src/**/*.ts`).
+
+**Caveat:** the docs confirm Glob activation exists but do not expose the
+literal frontmatter field/syntax used to declare a rule's glob pattern (only
+`.claude`'s `paths:` frontmatter key is confirmed, and that's Claude Code's
+own convention, not Antigravity's). So `general.md` is written to be Always
+On by convention, and `backend.md`/`frontend.md`/`deterministic-services.md`
+state their intended scope in prose rather than in unverified frontmatter —
+set their actual Glob scope via the Antigravity rules UI/CLI once you've
+confirmed the field syntax, or `@mention` them manually until then.
+
+- **`general.md`** — Always On: the fixed tech stack (no substitutions
+  without a human decision), the AI-vs-deterministic boundary (summary), the
+  "no unnecessary infrastructure" rule, and pointers to the testing and
+  security detail below.
+- **`backend.md`** — intended scope `backend/**`: project structure, naming
+  conventions, the deterministic-services purity rule (NFR-MNT-001), API/
+  schema conventions (NFR-MNT-002), testing targets (NFR-TST-001/002),
+  Section 36 security rules, and the Ruff/mypy/pytest toolchain.
+- **`frontend.md`** — intended scope `frontend/**`: project structure,
+  naming conventions, testing conventions, frontend security notes, and the
+  ESLint/Prettier/Vitest toolchain.
+- **`deterministic-services.md`** — intended scope
+  `backend/app/services/**` and `SRS_Doc/**`: the full AI-vs-deterministic
+  boundary (SRS Sections 33/34), a per-change checklist, and the Section 46
+  mandate to treat Sections 21–25/28/35–36 as versioned test fixtures. Kept
+  separate from `backend.md` because this is the single highest-risk
+  architectural rule in the SRS.
+
+Like AGENTS.md, rules are advisory context, not enforcement — see the hooks
+below for what's actually enforced.
+
+## The hooks
 
 `.agents/hooks.json` registers a `PreToolUse` hook on `run_command`, calling
 `.agents/hooks/block-publish.sh` (and its Python equivalent,
@@ -189,6 +237,22 @@ confirmed way to restrict enforcement to `phase-planner-implementer` only.
 Both agents (and the main session) get an `"ask"` prompt on any `git push` /
 `gh pr` command; `implementation-verifier-shipper`'s Step 7 (Ship) still works
 because "ask" pauses for a human decision rather than blocking outright.
+
+`.agents/hooks/block_srs_doc_edits.py`, wired via `PreToolUse` on
+`write_to_file|replace_file_content|multi_replace_file_content` (Antigravity's
+confirmed file-write/edit tool names, per `/docs/hooks/`), denies any
+edit/write targeting `SRS_Doc/`, regardless of which agent or the main
+session is making the call — the `.agents` counterpart of `.claude`'s
+`block-srs-doc-edits.sh`, using `"decision": "deny"` since Antigravity's
+`PreToolUse` output schema supports a hard deny (unlike the publish hook
+above, which deliberately uses "ask").
+
+`.agents/hooks/format_on_write.py`, wired via `PostToolUse` on the same
+matcher, best-effort auto-fixes/formats a just-written file with Ruff
+(`backend/*.py`) or ESLint+Prettier (`frontend/*.ts(x)`). It is fully inert
+today — neither directory nor those tools exist until Phase 1 scaffolds them
+— and is written to never fail or block the turn even if a tool is missing
+or errors; `PostToolUse` handlers return `{}`.
 
 ## How to actually use this, end to end
 

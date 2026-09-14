@@ -12,5 +12,33 @@
         ]
       }
     ]
+  },
+  "block-srs-doc-edits": {
+    "PreToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .agents/hooks/block_srs_doc_edits.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "format-on-write": {
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .agents/hooks/format_on_write.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
   }
 }

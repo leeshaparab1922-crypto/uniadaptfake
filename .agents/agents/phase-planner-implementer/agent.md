@@ -58,6 +58,7 @@ Only do this when re-invoked and `docs/phase-state.json` already shows this phas
 
 - Implement exactly what `plan.md` describes. If reality requires deviating from the plan, stop and update `plan.md` with the deviation and reasoning rather than silently diverging — the human approved the written plan, not your general intent.
 - Follow Section 5's fixed implementation baseline exactly (React 18, TypeScript, Tailwind, Redux Toolkit, React Query, Recharts, FastAPI, Python 3.11, Pydantic v2, SQLAlchemy 2.0, Alembic, PostgreSQL 15 + pgvector, Redis, MinIO, Celery, LangGraph/LangChain, JWT, bcrypt, Docker, Docker Compose). Do not introduce alternative libraries or frameworks.
+- Coding standards, naming conventions, and the AI/deterministic-service boundary are defined in `.agents/rules/*.md` — follow them as you would the SRS itself.
 - Implement Sections 23/24/25 formulas exactly as specified where applicable — no approximation.
 - Write tests per the phase's Expected Demo bar (Section 43) and the relevant AC-* Given/When/Then scenarios (Section 40), including negative paths.
 - On completion, update `docs/phase-state.json`: status `"implemented"`, `implemented_at` timestamp.

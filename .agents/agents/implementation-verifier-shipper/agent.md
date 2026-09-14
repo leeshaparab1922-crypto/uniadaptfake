@@ -34,6 +34,8 @@ Using the `srs-lookup` skill, re-pull the exact FR-*/BUS-*/AC-* set recorded in 
 
 Invoke a code reviewer subagent over the diff/changed files for this phase. Incorporate its findings into your report.
 
+Treat `.agents/rules/*.md` (general, backend, frontend, deterministic-services) as the canonical coding-standards checklist alongside the SRS — both for the delegated review and your own checks. Flag any NFR-MNT-001 pure-function violation or Section 33/34 AI/deterministic-boundary violation as a blocking finding, the same severity class as a BUS-* violation.
+
 ## Step 5: Write the verification report
 
 Save `docs/phases/phase-<N>-<kebab-name>/verification-report.md` using the structure in `docs/templates/verification-report-template.md`: per-requirement pass/fail table, regression test results, code-reviewer findings, and an explicit overall verdict — `PASS` (ready to ship) or `BLOCKED` (list of blocking issues, each traceable to a requirement ID).
