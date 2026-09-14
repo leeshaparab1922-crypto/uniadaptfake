@@ -22,7 +22,8 @@ in the conversation.
 ├── skills/
 │   ├── srs-lookup/                        Fast SRS lookups by ID/section/phase
 │   ├── phase-status/                      Reports phase progress vs. real repo state
-│   └── update-claude-md/                  Regenerates root CLAUDE.md's status table
+│   ├── update-claude-md/                  Regenerates root CLAUDE.md's status table
+│   └── verify-live/                       Static SRS-ID trace + live-site check for shipped phases
 ├── hooks/
 │   └── block-agent1-publish.sh            Blocks Agent 1 from git push / gh pr
 ├── settings.json                          Wires the hook above into PreToolUse
@@ -73,8 +74,13 @@ Verifies a phase Agent 1 marked `"implemented"`, then ships it.
 
 1. Re-checks the implementation against the exact FR-*/BUS-*/AC-* IDs recorded
    in that phase's `plan.md`, including negative test scenarios and (for phases
-   6–7) a line-by-line diff of the algorithm math against the SRS.
-2. Runs the full existing test suite to catch regressions in earlier phases.
+   6–7) a line-by-line diff of the algorithm math against the SRS. Uses the
+   `verify-live` skill's static trace to cross-check those same IDs against
+   actual repo code.
+2. Runs the full existing test suite to catch regressions in earlier phases —
+   `verify-live` run with no argument covers every phase currently claimed
+   `implemented`/`verifying`/`verified`/`blocked`/`shipped`, not just the one
+   under review, so it doubles as the regression check across all prior phases.
 3. Delegates a five-axis code review (correctness, readability, architecture,
    security, performance) to the existing `agent-skills:code-reviewer` agent —
    it doesn't reinvent that checklist itself.
@@ -87,7 +93,7 @@ Verifies a phase Agent 1 marked `"implemented"`, then ships it.
    — never application code. If it finds a defect, it reports it and stops
    rather than patching it itself, so its verification signal stays honest.
 
-## The three skills
+## The skills
 
 ### `srs-lookup`
 
@@ -131,6 +137,24 @@ between `<!-- BEGIN AUTO-GENERATED PHASE STATUS -->` /
 `<!-- END AUTO-GENERATED PHASE STATUS -->` markers in `CLAUDE.md` — any
 hand-written content elsewhere in the file (notes, conventions, anything a
 human adds) is preserved untouched across regenerations.
+
+### `verify-live`
+
+Cross-checks phases already marked `implemented`/`verified`/`shipped` against
+the SRS and the real repo — a static trace plus (once an app exists) a
+live-site Playwright/`chromium-cli` pass:
+
+```bash
+python .claude/skills/verify-live/scripts/audit_phases.py      # every claimed-done phase
+python .claude/skills/verify-live/scripts/audit_phases.py 1    # force-audit just phase 1
+```
+
+`implementation-verifier-shipper` preloads and uses this skill in its own
+Steps 2–3 (SRS trace + regression check across all prior phases, not just the
+one under review). A `MISSING` requirement ID is a prompt to go read that code
+yourself, not proof the feature is unbuilt — see the skill's own `SKILL.md`
+for the full caveats. The live-site half of the skill is unverified until the
+first phase actually ships an app to point at.
 
 ## The hook
 
