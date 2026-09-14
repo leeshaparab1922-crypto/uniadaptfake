@@ -9,6 +9,26 @@
             "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/block-agent1-publish.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/block-srs-doc-edits.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/format-on-write.sh"
+          }
+        ]
       }
     ]
   }

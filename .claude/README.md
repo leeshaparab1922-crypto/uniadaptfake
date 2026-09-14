@@ -24,9 +24,16 @@ in the conversation.
 │   ├── phase-status/                      Reports phase progress vs. real repo state
 │   ├── update-claude-md/                  Regenerates root CLAUDE.md's status table
 │   └── verify-live/                       Static SRS-ID trace + live-site check for shipped phases
+├── rules/
+│   ├── general.md                         Always-loaded: fixed stack, AI/deterministic boundary, testing/security pointers
+│   ├── backend.md                         Loads for backend/** — structure, naming, security, lint/format/test tools
+│   ├── frontend.md                        Loads for frontend/** — structure, naming, testing, lint/format/test tools
+│   └── deterministic-services.md          Loads for backend/app/services/** and SRS_Doc/** — the AI/deterministic boundary, in detail
 ├── hooks/
-│   └── block-agent1-publish.sh            Blocks Agent 1 from git push / gh pr
-├── settings.json                          Wires the hook above into PreToolUse
+│   ├── block-agent1-publish.sh            Blocks Agent 1 from git push / gh pr
+│   ├── block-srs-doc-edits.sh             Blocks any edit/write under SRS_Doc/, from any agent or session
+│   └── format-on-write.sh                 Best-effort Ruff/ESLint/Prettier auto-fix after Edit/Write (no-op until Phase 1 exists)
+├── settings.json                          Wires the hooks above into PreToolUse/PostToolUse
 └── README.md                              This file
 ```
 
@@ -156,7 +163,40 @@ yourself, not proof the feature is unbuilt — see the skill's own `SKILL.md`
 for the full caveats. The live-site half of the skill is unverified until the
 first phase actually ships an app to point at.
 
-## The hook
+## The rules
+
+`.claude/rules/*.md` files hold coding standards derived from the SRS. They
+load **automatically by path** — when a file matching a rule's `paths:`
+frontmatter glob is opened, read, or edited, that rule's content is added to
+context for the turn. This is a different mechanism from the `skills:`
+frontmatter list the two agents use to preload skills: skills are explicitly
+requested by name; rules are triggered implicitly by which files are in play.
+Do not add a rules file to an agent's `skills:` list — it has no `SKILL.md`
+and that mechanism won't pick it up.
+
+- **`general.md`** — no `paths:` filter, so it loads every turn: the fixed
+  tech stack (no substitutions without a human decision), the AI-vs-
+  deterministic boundary (summary), the "no unnecessary infrastructure"
+  rule, and pointers to the testing and security detail below.
+- **`backend.md`** — loads for `backend/**`: project structure, naming
+  conventions, the deterministic-services purity rule (NFR-MNT-001), API/
+  schema conventions (NFR-MNT-002), testing targets (NFR-TST-001/002),
+  Section 36 security rules, and the Ruff/mypy/pytest toolchain.
+- **`frontend.md`** — loads for `frontend/**`: project structure, naming
+  conventions, testing conventions, frontend security notes, and the
+  ESLint/Prettier/Vitest toolchain.
+- **`deterministic-services.md`** — loads for `backend/app/services/**` and
+  `SRS_Doc/**`: the full AI-vs-deterministic boundary (SRS Sections 33/34),
+  a per-change checklist, and the Section 46 mandate to treat Sections
+  21–25/28/35–36 as versioned test fixtures. Kept separate from `backend.md`
+  because this is the single highest-risk architectural rule in the SRS —
+  a narrowly-scoped file guarantees it surfaces even when only one services
+  file is open.
+
+Like CLAUDE.md, rules are advisory context, not enforcement — see the hooks
+below for what's actually enforced.
+
+## The hooks
 
 `.claude/hooks/block-agent1-publish.sh`, wired via `.claude/settings.json`'s
 `PreToolUse` hook on the `Bash` tool, blocks `git push` and `gh pr` **only when
@@ -164,6 +204,19 @@ the invoking agent is `phase-planner-implementer`**. The main session and
 `implementation-verifier-shipper` are unaffected. This is a backstop — Agent 1
 is also instructed never to run these commands — enforced at the shell level so
 it can't be talked around.
+
+`.claude/hooks/block-srs-doc-edits.sh`, wired via `PreToolUse` on `Edit|Write`,
+blocks any edit or write targeting `SRS_Doc/`, **regardless of which agent or
+the main session is making the call**. `SRS_Doc/` is the project's single
+source of truth; both agents already treat it as read-only by prompt
+convention, but per Claude Code's own behavior, prompt instructions are
+advisory only — this hook makes the restriction deterministic.
+
+`.claude/hooks/format-on-write.sh`, wired via `PostToolUse` on `Edit|Write`,
+best-effort auto-fixes/formats a just-written file with Ruff (`backend/*.py`)
+or ESLint+Prettier (`frontend/*.ts(x)`). It is fully inert today — neither
+directory nor those tools exist until Phase 1 scaffolds them — and is written
+to never fail or block the turn even if a tool is missing or errors.
 
 ## How to actually use this, end to end
 
