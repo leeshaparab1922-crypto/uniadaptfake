@@ -7,6 +7,7 @@ permissionMode: default
 skills:
   - srs-lookup
   - phase-status
+  - verify-live
 maxTurns: 40
 color: green
 ---

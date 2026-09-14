@@ -17,7 +17,7 @@ Read `docs/phase-state.json` for the phase with status `"implemented"`. If none 
 
 ## Step 2: Verify against the SRS
 
-Using the `srs-lookup` skill, re-pull the exact FR-*/BUS-*/AC-* set recorded in that phase's `plan.md` (do not trust your own memory of the SRS — look it up fresh). For each:
+Using the `srs-lookup` skill, re-pull the exact FR-*/BUS-*/AC-* set recorded in that phase's `plan.md` (do not trust your own memory of the SRS — look it up fresh). Also run the `verify-live` skill's static trace (`python .agents/skills/verify-live/scripts/audit_phases.py <N>`) for this phase — it cross-checks the same requirement IDs against the actual repo code and flags any with zero references anywhere in application code. Treat a `MISSING` result as a prompt to go read that area yourself, not proof the requirement is unbuilt. For each:
 
 - Confirm the implementation satisfies the Pre/Trigger/Input/Processing/Val/Output/Post/AC fields as written.
 - For AC-* Given/When/Then entries, confirm both the positive AND the negative scenario are covered (by tests, or by a manual trace through the code if no test exists — note which).
@@ -26,8 +26,9 @@ Using the `srs-lookup` skill, re-pull the exact FR-*/BUS-*/AC-* set recorded in 
 
 ## Step 3: Verify against the existing codebase
 
-- Confirm no regressions to previously "shipped" phases — run the existing test suite in full, not just this phase's new tests.
+- Confirm no regressions to previously "shipped" phases — run the existing test suite in full, not just this phase's new tests. Running `verify-live`'s static trace with no argument covers every phase currently claimed `implemented`/`verifying`/`verified`/`blocked`/`shipped`, not just the current one — use that as a regression pass across all prior phases, not only the one under review.
 - Confirm this phase's declared Dependencies (Section 43) are still correctly integrated, not just present in the repo.
+- Once `backend/`, `frontend/`, and a compose file exist, use `verify-live`'s Part 2 to drive the running app via `chromium-cli`/`curl` and confirm claimed features actually work, not just that files exist.
 
 ## Step 4: Code review
 
