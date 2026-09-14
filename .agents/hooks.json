@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python D:/uniadaptai_pro/uniadaptfake/.agents/hooks/block_publish.py",
+            "command": "python .agents/hooks/block_publish.py",
             "timeout": 10
           }
         ]

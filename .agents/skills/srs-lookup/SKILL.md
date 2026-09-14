@@ -1,9 +1,6 @@
 ---
 name: srs-lookup
-description: >-
-  Look up SRS sections, FR-/BUS-/AC-/OBJ-/BR-/NFR-/US-IDs, or Section-43 phase
-  rows by ID, section number, or phase number, without reading the full
-  1527-line SRS document.
+description: Look up SRS sections, FR-/BUS-/AC-/OBJ-/BR-/NFR-/US-IDs, or Section-43 phase rows by ID, section number, or phase number, without reading the full 1527-line SRS document.
 ---
 
 # SRS Lookup
@@ -13,7 +10,7 @@ Use this skill instead of reading the whole SRS document whenever you need a spe
 Run:
 
 ```bash
-bash .agents/skills/srs-lookup/scripts/lookup.sh $ARGUMENTS
+bash scripts/lookup.sh <QUERY>
 ```
 
 Query forms:
