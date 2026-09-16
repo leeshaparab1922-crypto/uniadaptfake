@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/scripts/block-srs-doc-edits.sh",
+        "powershell": "pwsh -NoProfile -File .github/hooks/scripts/block-srs-doc-edits.ps1",
+        "cwd": ".",
+        "timeoutSec": 10
+      },
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/scripts/block-agent1-publish.sh",
+        "powershell": "pwsh -NoProfile -File .github/hooks/scripts/block-agent1-publish.ps1",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/scripts/format-on-write.sh",
+        "powershell": "pwsh -NoProfile -File .github/hooks/scripts/format-on-write.ps1",
+        "cwd": ".",
+        "timeoutSec": 25
+      }
+    ]
+  }
+}
