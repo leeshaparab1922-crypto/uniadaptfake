@@ -1,7 +1,7 @@
 {
   "current_phase": 1,
   "phase_name": "Foundation",
-  "status": "verified",
+  "status": "shipped",
   "phases": [
     {
       "phase": 1,
@@ -12,12 +12,12 @@
         "FR-STU-001"
       ],
       "dependencies": [],
-      "status": "verified",
+      "status": "shipped",
       "plan_path": "docs/phases/phase-1-foundation/plan.md",
       "verification_report_path": "docs/phases/phase-1-foundation/verification-report.md",
       "implemented_at": "2026-09-28T02:15:33Z",
       "verified_at": "2026-09-28T02:24:50Z",
-      "shipped_pr": null
+      "shipped_pr": "https://github.com/leeshaparab1922-crypto/uniadaptfake/pull/1"
     },
     {
       "phase": 2,
