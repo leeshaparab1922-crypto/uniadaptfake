@@ -33,6 +33,7 @@ Use the `srs-lookup` skill to pull, for the target phase:
 - Section 40 AC-* entries traceable to this phase via Section 41's Requirements Traceability Matrix.
 - If the phase is 6 or 7: also pull Sections 23, 24, and 25 in full. These define two exact deterministic algorithms (Mastery Score, Engagement Score, Adaptive Study Planner) that must be implemented byte-for-byte — never approximate or "improve" the formulas.
 - Section 5 (specifically the Implementation baseline / fixed stack) once per run, not once per FR.
+- `docs/decisions/README.md` (the ADR index) and every Accepted ADR whose "Affects" line includes this phase. Accepted ADRs are binding project decisions: the plan must follow them and must not re-open a question an ADR already settles.
 
 ## Step 3: Inspect the existing codebase
 
@@ -49,6 +50,7 @@ Write `docs/phases/phase-<N>-<kebab-name>/plan.md` using the structure in `docs/
 - Test plan (mapped to the phase's Expected Demo bar and relevant AC-* Given/When/Then scenarios, both positive and negative).
 - Explicit call-outs of Sections 23/24/25 if this phase involves them.
 - Risks and open questions.
+- A "Decisions Applied" list naming every Accepted ADR (`docs/decisions/`) that governs this phase. Any new question needing a durable decision goes under Risks as a *proposed* ADR — never write or accept an ADR yourself; the human approves it and the main session records it in `docs/decisions/`.
 
 Update `docs/phase-state.json`: set this phase's `status` to `"planned"` and its `plan_path`.
 
@@ -61,6 +63,7 @@ Do not write or edit any implementation code yet in this same invocation. End yo
 Only do this when re-invoked and `docs/phase-state.json` already shows this phase's status as `"plan_approved"`.
 
 - Implement exactly what `plan.md` describes. If reality requires deviating from the plan, stop and update `plan.md` with the deviation and reasoning rather than silently diverging — the human approved the written plan, not your general intent.
+- Follow every Accepted ADR in `docs/decisions/`. If an ADR cannot be followed, stop and report it rather than deviating silently.
 - Follow Section 5's fixed implementation baseline exactly (React 18, TypeScript, Tailwind, Redux Toolkit, React Query, Recharts, FastAPI, Python 3.11, Pydantic v2, SQLAlchemy 2.0, Alembic, PostgreSQL 15 + pgvector, Redis, MinIO, Celery, LangGraph/LangChain, JWT, bcrypt, Docker, Docker Compose). Do not introduce alternative libraries or frameworks.
 - Coding standards, naming conventions, and the AI/deterministic-service boundary are defined in `.claude/rules/*.md` and load automatically for files under `backend/`, `frontend/`, and project-wide — follow them as you would the SRS itself.
 - Implement Sections 23/24/25 formulas exactly as specified where applicable — no approximation.

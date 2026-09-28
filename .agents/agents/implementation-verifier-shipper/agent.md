@@ -23,6 +23,7 @@ Using the `srs-lookup` skill, re-pull the exact FR-*/BUS-*/AC-* set recorded in 
 - For AC-* Given/When/Then entries, confirm both the positive AND the negative scenario are covered (by tests, or by a manual trace through the code if no test exists — note which).
 - For phases touching Sections 23, 24, or 25 (exact algorithms), diff the implemented code's math against the SRS text line by line. Any deviation is a blocking finding.
 - Treat any BUS-* invariant violation as a blocking finding, never a style suggestion (e.g. "Engagement Score must never affect Mastery Score" is a hard rule, not a preference).
+- Read `docs/decisions/README.md` and check the implementation against every Accepted ADR that affects this phase. An ADR violation is a blocking finding.
 
 ## Step 3: Verify against the existing codebase
 
