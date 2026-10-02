@@ -7,8 +7,74 @@ import {
   useCreateProgram,
   useCreateSection,
   useCreateSemester,
+  useBatches,
+  useDepartments,
+  useInstitutes,
+  usePrograms,
+  useSections,
+  useSemesters,
 } from "../../api/academicStructureApi";
 import { useNotify } from "../../hooks/useNotify";
+
+interface RecordListProps<T extends { id: string }> {
+  testId: string;
+  label: string;
+  parentSelected: boolean;
+  parentHint: string;
+  query: { data?: T[]; isLoading: boolean; isError: boolean; error: Error | null };
+  selectedId: string;
+  onSelect?: (id: string) => void;
+  describe: (row: T) => string;
+}
+
+/** Saved records for one hierarchy level. Clicking a row selects it as the
+ * parent for the next level's form, so the page works after a reload. */
+function RecordList<T extends { id: string }>({
+  testId,
+  label,
+  parentSelected,
+  parentHint,
+  query,
+  selectedId,
+  onSelect,
+  describe,
+}: RecordListProps<T>) {
+  const rows = query.data ?? [];
+  return (
+    <div data-testid={testId} className="text-sm">
+      {!parentSelected ? (
+        <p className="text-gray-500">{parentHint}</p>
+      ) : query.isLoading ? (
+        <p className="text-gray-500">Loading...</p>
+      ) : query.isError ? (
+        <p role="alert" className="text-red-600">
+          {`Could not load ${label}: ${query.error?.message ?? "unknown error"}`}
+        </p>
+      ) : rows.length === 0 ? (
+        <p className="text-gray-500">{`No ${label} yet.`}</p>
+      ) : (
+        <ul className="space-y-1">
+          {rows.map((row) => (
+            <li key={row.id}>
+              {onSelect ? (
+                <button
+                  type="button"
+                  aria-pressed={row.id === selectedId}
+                  onClick={() => onSelect(row.id)}
+                  className={`rounded border px-2 py-1 ${row.id === selectedId ? "bg-blue-100" : ""}`}
+                >
+                  {describe(row)}
+                </button>
+              ) : (
+                <span className="px-2 py-1">{describe(row)}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 /** FR-ADM-001: Institute -> Department -> Program -> Batch -> Semester ->
  * Section hierarchy maintenance. Numeric input bounds mirror the backend
@@ -28,6 +94,37 @@ export default function HierarchyManager() {
   const [batchId, setBatchId] = useState("");
   const [semesterId, setSemesterId] = useState("");
 
+  const institutes = useInstitutes();
+  const departments = useDepartments(instituteId);
+  const programs = usePrograms(departmentId);
+  const batches = useBatches(programId);
+  const semesters = useSemesters(batchId);
+  const sections = useSections(semesterId);
+
+  // Choosing a parent clears every deeper selection.
+  function pickInstitute(id: string) {
+    setInstituteId(id);
+    setDepartmentId("");
+    setProgramId("");
+    setBatchId("");
+    setSemesterId("");
+  }
+  function pickDepartment(id: string) {
+    setDepartmentId(id);
+    setProgramId("");
+    setBatchId("");
+    setSemesterId("");
+  }
+  function pickProgram(id: string) {
+    setProgramId(id);
+    setBatchId("");
+    setSemesterId("");
+  }
+  function pickBatch(id: string) {
+    setBatchId(id);
+    setSemesterId("");
+  }
+
   function submitInstitute(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formEl = e.currentTarget;
@@ -36,7 +133,7 @@ export default function HierarchyManager() {
       { name: String(form.get("name")), timezone: String(form.get("timezone") || "Asia/Kolkata") },
       {
         onSuccess: (data) => {
-          setInstituteId(data.id);
+          pickInstitute(data.id);
           formEl.reset();
           notify.success("Institute created.");
         },
@@ -53,7 +150,7 @@ export default function HierarchyManager() {
       { institute_id: instituteId, code: String(form.get("code")), name: String(form.get("name")) },
       {
         onSuccess: (data) => {
-          setDepartmentId(data.id);
+          pickDepartment(data.id);
           formEl.reset();
           notify.success("Department created.");
         },
@@ -75,7 +172,7 @@ export default function HierarchyManager() {
       },
       {
         onSuccess: (data) => {
-          setProgramId(data.id);
+          pickProgram(data.id);
           formEl.reset();
           notify.success("Program created.");
         },
@@ -96,7 +193,7 @@ export default function HierarchyManager() {
       },
       {
         onSuccess: (data) => {
-          setBatchId(data.id);
+          pickBatch(data.id);
           formEl.reset();
           notify.success("Batch created.");
         },
@@ -158,6 +255,16 @@ export default function HierarchyManager() {
           Add Institute
         </button>
       </form>
+      <RecordList
+        testId="institute-list"
+        label="institutes"
+        parentSelected
+        parentHint=""
+        query={institutes}
+        selectedId={instituteId}
+        onSelect={pickInstitute}
+        describe={(r) => `${r.name} (${r.timezone})`}
+      />
 
       <form onSubmit={submitDepartment} className="space-x-2">
         <input
@@ -182,6 +289,16 @@ export default function HierarchyManager() {
           Add Department
         </button>
       </form>
+      <RecordList
+        testId="department-list"
+        label="departments"
+        parentSelected={Boolean(instituteId)}
+        parentHint="Select an institute to see its departments."
+        query={departments}
+        selectedId={departmentId}
+        onSelect={pickDepartment}
+        describe={(r) => `${r.code} - ${r.name}`}
+      />
 
       <form onSubmit={submitProgram} className="space-x-2">
         <input
@@ -216,6 +333,16 @@ export default function HierarchyManager() {
           Add Program
         </button>
       </form>
+      <RecordList
+        testId="program-list"
+        label="programs"
+        parentSelected={Boolean(departmentId)}
+        parentHint="Select a department to see its programs."
+        query={programs}
+        selectedId={programId}
+        onSelect={pickProgram}
+        describe={(r) => `${r.code} - ${r.name} (${r.duration_semesters} semesters)`}
+      />
 
       <form onSubmit={submitBatch} className="space-x-2">
         <input
@@ -248,6 +375,16 @@ export default function HierarchyManager() {
           Add Batch
         </button>
       </form>
+      <RecordList
+        testId="batch-list"
+        label="batches"
+        parentSelected={Boolean(programId)}
+        parentHint="Select a program to see its batches."
+        query={batches}
+        selectedId={batchId}
+        onSelect={pickBatch}
+        describe={(r) => `${r.start_year}-${r.end_year}`}
+      />
 
       <form onSubmit={submitSemester} className="space-x-2">
         <input
@@ -282,6 +419,16 @@ export default function HierarchyManager() {
           Add Semester
         </button>
       </form>
+      <RecordList
+        testId="semester-list"
+        label="semesters"
+        parentSelected={Boolean(batchId)}
+        parentHint="Select a batch to see its semesters."
+        query={semesters}
+        selectedId={semesterId}
+        onSelect={setSemesterId}
+        describe={(r) => `Semester ${r.number} (${r.start_date} to ${r.end_date})`}
+      />
 
       <form onSubmit={submitSection} className="space-x-2">
         <input
@@ -309,6 +456,15 @@ export default function HierarchyManager() {
           Add Section
         </button>
       </form>
+      <RecordList
+        testId="section-list"
+        label="sections"
+        parentSelected={Boolean(semesterId)}
+        parentHint="Select a semester to see its sections."
+        query={sections}
+        selectedId=""
+        describe={(r) => `${r.name} (capacity ${r.capacity})`}
+      />
     </div>
   );
 }

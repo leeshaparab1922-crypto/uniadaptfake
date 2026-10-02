@@ -87,9 +87,10 @@ describe("admin forms feedback and input bounds", () => {
   });
 
   it("shows a success toast and resets the form after a successful create", async () => {
-    fetchMock.mockReturnValueOnce(
-      jsonResponse(201, { id: "inst-1", name: "Inst", timezone: "UTC" }),
-    );
+    fetchMock
+      .mockReturnValueOnce(jsonResponse(200, [])) // initial institute list
+      .mockReturnValueOnce(jsonResponse(201, { id: "inst-1", name: "Inst", timezone: "UTC" }))
+      .mockReturnValue(jsonResponse(200, [])); // refetches after create
     renderWithProviders(<HierarchyManager />);
     const name = screen.getByPlaceholderText("Institute name") as HTMLInputElement;
     await userEvent.type(name, "Inst");
@@ -100,11 +101,13 @@ describe("admin forms feedback and input bounds", () => {
   });
 
   it("surfaces the backend error detail (incl. 422) in an error toast", async () => {
-    fetchMock.mockReturnValueOnce(
-      jsonResponse(422, {
-        detail: [{ loc: ["body", "name"], msg: "String should have at least 1 character" }],
-      }),
-    );
+    fetchMock
+      .mockReturnValueOnce(jsonResponse(200, [])) // initial institute list
+      .mockReturnValueOnce(
+        jsonResponse(422, {
+          detail: [{ loc: ["body", "name"], msg: "String should have at least 1 character" }],
+        }),
+      );
     renderWithProviders(<HierarchyManager />);
     await userEvent.type(screen.getByPlaceholderText("Institute name"), "Inst");
     await userEvent.click(screen.getByRole("button", { name: /add institute/i }));

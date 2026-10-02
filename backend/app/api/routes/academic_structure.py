@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import uuid
+
 from fastapi import APIRouter, Depends
 
 from app.core.deps import CurrentUser, DbSession, csrf_protect, require_role
@@ -95,3 +97,38 @@ def create_section(payload: SectionCreate, db: DbSession, current_user: CurrentU
         capacity=payload.capacity,
     )
     return SectionOut.model_validate(section)
+
+
+# Read endpoints (FR-ADM-001 "view"): one list endpoint per level, filtered by
+# parent id so the UI loads only the level it is showing. Same router-level
+# ADMIN guard as the writes.
+
+
+@router.get("/institutes", response_model=list[InstituteOut])
+def list_institutes(db: DbSession) -> list[InstituteOut]:
+    return [InstituteOut.model_validate(r) for r in service.list_institutes(db)]
+
+
+@router.get("/departments", response_model=list[DepartmentOut])
+def list_departments(db: DbSession, institute_id: uuid.UUID | None = None) -> list[DepartmentOut]:
+    return [DepartmentOut.model_validate(r) for r in service.list_departments(db, institute_id=institute_id)]
+
+
+@router.get("/programs", response_model=list[ProgramOut])
+def list_programs(db: DbSession, department_id: uuid.UUID | None = None) -> list[ProgramOut]:
+    return [ProgramOut.model_validate(r) for r in service.list_programs(db, department_id=department_id)]
+
+
+@router.get("/batches", response_model=list[BatchOut])
+def list_batches(db: DbSession, program_id: uuid.UUID | None = None) -> list[BatchOut]:
+    return [BatchOut.model_validate(r) for r in service.list_batches(db, program_id=program_id)]
+
+
+@router.get("/semesters", response_model=list[SemesterOut])
+def list_semesters(db: DbSession, batch_id: uuid.UUID | None = None) -> list[SemesterOut]:
+    return [SemesterOut.model_validate(r) for r in service.list_semesters(db, batch_id=batch_id)]
+
+
+@router.get("/sections", response_model=list[SectionOut])
+def list_sections(db: DbSession, semester_id: uuid.UUID | None = None) -> list[SectionOut]:
+    return [SectionOut.model_validate(r) for r in service.list_sections(db, semester_id=semester_id)]

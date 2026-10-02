@@ -198,3 +198,46 @@ def create_section(db: Session, *, actor: User, semester_id: uuid.UUID, name: st
     )
     db.commit()
     return section
+
+
+# --- Read-only list queries (FR-ADM-001 "view"). One query per level,
+# optional parent filter, deterministic ordering (natural key, then id). ---
+
+
+def list_institutes(db: Session) -> list[Institute]:
+    return list(db.scalars(select(Institute).order_by(Institute.name, Institute.id)))
+
+
+def list_departments(db: Session, *, institute_id: uuid.UUID | None = None) -> list[Department]:
+    stmt = select(Department).order_by(Department.code, Department.id)
+    if institute_id is not None:
+        stmt = stmt.where(Department.institute_id == institute_id)
+    return list(db.scalars(stmt))
+
+
+def list_programs(db: Session, *, department_id: uuid.UUID | None = None) -> list[Program]:
+    stmt = select(Program).order_by(Program.code, Program.id)
+    if department_id is not None:
+        stmt = stmt.where(Program.department_id == department_id)
+    return list(db.scalars(stmt))
+
+
+def list_batches(db: Session, *, program_id: uuid.UUID | None = None) -> list[Batch]:
+    stmt = select(Batch).order_by(Batch.start_year, Batch.id)
+    if program_id is not None:
+        stmt = stmt.where(Batch.program_id == program_id)
+    return list(db.scalars(stmt))
+
+
+def list_semesters(db: Session, *, batch_id: uuid.UUID | None = None) -> list[Semester]:
+    stmt = select(Semester).order_by(Semester.number, Semester.id)
+    if batch_id is not None:
+        stmt = stmt.where(Semester.batch_id == batch_id)
+    return list(db.scalars(stmt))
+
+
+def list_sections(db: Session, *, semester_id: uuid.UUID | None = None) -> list[Section]:
+    stmt = select(Section).order_by(Section.name, Section.id)
+    if semester_id is not None:
+        stmt = stmt.where(Section.semester_id == semester_id)
+    return list(db.scalars(stmt))

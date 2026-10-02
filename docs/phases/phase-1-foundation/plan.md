@@ -324,3 +324,26 @@ Re-verification (see "Re-verification (2026-09-28)" in `verification-report.md`)
 
 1. **Promotion/transfer target consistency (FR-ADM-006 Val: "no ... mismatches").** In `enrollment_service.preview_promotion` (and therefore `confirm_promotion`), reject the request with a validation error unless the target Section's Semester belongs to `to_batch_id` and has number `to_semester_no`. Add negative tests (wrong batch, wrong semester number) for preview and confirm, asserting no rows, history or audit entries are written.
 2. **Audit-row test coverage (ADR-0011 test clause).** Add tests asserting the `audit_logs` row (action, actor, entity) for every mutating service function: all mutating functions in `auth_service`; both mutating functions in `subject_instance_service` (new `tests/unit/test_subject_instance_service.py`, also covering its two untested validation branches); and every remaining mutating function in `academic_structure_service`, `calendar_service` and `subject_service`.
+
+## Addendum: FR-ADM-001 hierarchy list view (view-only) (2026-10-02)
+
+**Approval:** the human approved this addendum in chat on 2026-10-02 ("add the hierarchy list view in phase 1 plan and implement using required agents and skills"). It is not a new phase; `phase-state.json` statuses are unchanged.
+
+**Gap.** FR-ADM-001 requires the Admin to create, view, update and safely deactivate Institute, Department, Program, Batch, Semester and Section. Only create existed: `routes/academic_structure.py` had POST routes only, and `HierarchyManager.tsx` showed no saved records and held only the last-created ID in component state, which is lost on reload.
+
+**Scope: view only.** Admin-only read endpoints for each level, and a frontend that lists saved records and lets the Admin pick an existing parent.
+
+**Out of scope (still open, remaining FR-ADM-001 gap).** Update and safe deactivate of hierarchy records. There is no `is_active` column on these tables, so deactivation also needs a migration and a rule for children and enrolled students; it needs its own approved plan.
+
+**Design.** One `GET` list endpoint per level under `/admin/academic-structure`, with an optional parent-id query filter (`institute_id`, `department_id`, `program_id`, `batch_id`, `semester_id`). Chosen over a single tree endpoint so the UI loads only the level it is showing, payload size stays bounded as data grows, and the existing `*Out` schemas are reused unchanged. Each endpoint is one query (no N+1). Ordering is stable: Institute by name, Department/Program by code, Batch by start_year, Semester by number, Section by name, then id. Same router-level `require_role(ADMIN)` guard. No migration.
+
+**File-by-file.**
+- `backend/app/services/academic_structure_service.py`: add `list_institutes/departments/programs/batches/semesters/sections`.
+- `backend/app/api/routes/academic_structure.py`: add six GET routes using the existing `*Out` schemas.
+- `backend/tests/integration/test_academic_structure_api.py` (new): per-level listing, parent filtering, ordering, empty/unknown parent, invalid id 422, 401 unauthenticated, 403 Teacher and Student.
+- `frontend/src/api/academicStructureApi.ts`: React Query list hooks keyed under `["academic-structure", level, parentId]`; create mutations keep invalidating the `["academic-structure"]` root so every list refreshes.
+- `frontend/src/pages/admin/HierarchyManager.tsx`: per-level record list (empty and hint states); clicking a record selects it as the parent for the next level, clearing deeper selections; forms, toasts and min/max constraints unchanged.
+- `frontend/src/__tests__/HierarchyManager.test.tsx` (new): listing, empty state, parent selection, refresh after create, selection reset.
+- `frontend/src/__tests__/AdminFeedback.test.tsx`: existing HierarchyManager tests adjusted for the new initial list request.
+
+**Test plan.** Backend pytest (positive: lists and filters and ordering; negative: 401, 403, 422). Frontend Vitest as above. Gates: pytest, ruff on changed files, `tsc -b`, eslint, vitest, `npm run build`.
