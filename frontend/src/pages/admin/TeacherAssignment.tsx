@@ -6,6 +6,7 @@ import {
   useCreateSubjectInstance,
   useSetSubjectOwner,
 } from "../../api/subjectInstanceApi";
+import { useNotify } from "../../hooks/useNotify";
 import type { TeacherAssignmentRole } from "../../types/subject";
 
 /** FR-ADM-002 / FR-ADM-004: SubjectInstance mapping, Teacher assignment,
@@ -15,39 +16,77 @@ export default function TeacherAssignment() {
   const activateInstance = useActivateSubjectInstance();
   const assignTeacher = useAssignTeacher();
   const setOwner = useSetSubjectOwner();
+  const notify = useNotify();
 
   function submitInstance(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    createInstance.mutate({
-      subject_id: String(form.get("subject_id")),
-      section_id: String(form.get("section_id")),
-    });
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
+    createInstance.mutate(
+      {
+        subject_id: String(form.get("subject_id")),
+        section_id: String(form.get("section_id")),
+      },
+      {
+        onSuccess: () => {
+          formEl.reset();
+          notify.success("Subject instance created.");
+        },
+        onError: notify.error,
+      },
+    );
   }
 
   function submitAssignment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    assignTeacher.mutate({
-      teacher_id: String(form.get("teacher_id")),
-      subject_instance_id: String(form.get("subject_instance_id")),
-      role: form.get("role") as TeacherAssignmentRole,
-    });
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
+    assignTeacher.mutate(
+      {
+        teacher_id: String(form.get("teacher_id")),
+        subject_instance_id: String(form.get("subject_instance_id")),
+        role: form.get("role") as TeacherAssignmentRole,
+      },
+      {
+        onSuccess: () => {
+          formEl.reset();
+          notify.success("Teacher assigned.");
+        },
+        onError: notify.error,
+      },
+    );
   }
 
   function submitActivate(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    activateInstance.mutate(String(form.get("subject_instance_id")));
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
+    activateInstance.mutate(String(form.get("subject_instance_id")), {
+      onSuccess: () => {
+        formEl.reset();
+        notify.success("Subject instance activated.");
+      },
+      onError: notify.error,
+    });
   }
 
   function submitOwner(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    setOwner.mutate({
-      subject_id: String(form.get("subject_id")),
-      owner_teacher_id: String(form.get("owner_teacher_id")),
-    });
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
+    setOwner.mutate(
+      {
+        subject_id: String(form.get("subject_id")),
+        owner_teacher_id: String(form.get("owner_teacher_id")),
+      },
+      {
+        onSuccess: () => {
+          formEl.reset();
+          notify.success("Subject owner set.");
+        },
+        onError: notify.error,
+      },
+    );
   }
 
   return (
@@ -64,7 +103,12 @@ export default function TeacherAssignment() {
 
       <form onSubmit={submitAssignment} className="space-x-2">
         <input name="teacher_id" placeholder="Teacher ID" required className="border px-2 py-1" />
-        <input name="subject_instance_id" placeholder="SubjectInstance ID" required className="border px-2 py-1" />
+        <input
+          name="subject_instance_id"
+          placeholder="SubjectInstance ID"
+          required
+          className="border px-2 py-1"
+        />
         <select name="role" className="border px-2 py-1">
           <option value="PRIMARY">PRIMARY</option>
           <option value="CO">CO</option>
@@ -75,7 +119,12 @@ export default function TeacherAssignment() {
       </form>
 
       <form onSubmit={submitActivate} className="space-x-2">
-        <input name="subject_instance_id" placeholder="SubjectInstance ID" required className="border px-2 py-1" />
+        <input
+          name="subject_instance_id"
+          placeholder="SubjectInstance ID"
+          required
+          className="border px-2 py-1"
+        />
         <button type="submit" className="rounded bg-green-600 px-3 py-1 text-white">
           Activate (requires an assigned Teacher)
         </button>
@@ -83,7 +132,12 @@ export default function TeacherAssignment() {
 
       <form onSubmit={submitOwner} className="space-x-2">
         <input name="subject_id" placeholder="Subject ID" required className="border px-2 py-1" />
-        <input name="owner_teacher_id" placeholder="Owner Teacher ID" required className="border px-2 py-1" />
+        <input
+          name="owner_teacher_id"
+          placeholder="Owner Teacher ID"
+          required
+          className="border px-2 py-1"
+        />
         <button type="submit" className="rounded bg-blue-600 px-3 py-1 text-white">
           Set Subject Owner (exactly one per Subject)
         </button>

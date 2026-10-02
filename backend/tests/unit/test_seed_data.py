@@ -40,3 +40,17 @@ def test_seed_creates_expected_core_entities(db_session):
     assert db_session.query(User).filter(User.role == UserRole.STUDENT).count() >= 1
     assert db_session.query(Subject).filter(Subject.type == SubjectType.LAB).count() >= 1
     assert db_session.query(Subject).filter(Subject.type == SubjectType.ELECTIVE).count() >= 1
+
+
+def test_seed_demo_emails_are_valid_for_login_schema():
+    """Regression: demo emails must pass LoginRequest's EmailStr validation
+    (special-use TLDs such as .test are rejected, which broke demo login)."""
+    import re
+
+    from app.schemas.auth import LoginRequest
+
+    source = (Path(__file__).resolve().parents[2] / "scripts" / "seed_demo_data.py").read_text()
+    emails = re.findall(r'email="([^"]+)"', source)
+    assert emails
+    for email in emails:
+        assert LoginRequest(email=email, password="x").email == email

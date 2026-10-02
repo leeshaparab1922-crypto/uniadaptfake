@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.models.enrollment import EnrollmentStatus
 
@@ -29,7 +29,7 @@ class AssignElectiveRequest(BaseModel):
 class PromotionRequest(BaseModel):
     student_ids: list[uuid.UUID]
     to_batch_id: uuid.UUID
-    to_semester_no: int
+    to_semester_no: int = Field(gt=0)
     to_section_id: uuid.UUID
 
 

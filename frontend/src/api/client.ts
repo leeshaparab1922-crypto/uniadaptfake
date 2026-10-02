@@ -22,6 +22,24 @@ export class ApiError extends Error {
   }
 }
 
+/** FastAPI returns `detail` as a string, or (422) a list of
+ * `{loc, msg}` validation objects - flatten either into one readable line. */
+function formatDetail(detail: unknown): string | undefined {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail.map((item) => {
+      if (item && typeof item === "object" && "msg" in item) {
+        const { loc, msg } = item as { loc?: unknown[]; msg: string };
+        const field = Array.isArray(loc) ? loc.filter((p) => p !== "body").join(".") : "";
+        return field ? `${field}: ${msg}` : msg;
+      }
+      return String(item);
+    });
+    return parts.join("; ");
+  }
+  return undefined;
+}
+
 interface RequestOptions {
   method?: string;
   body?: unknown;
@@ -60,7 +78,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     let detail = response.statusText;
     try {
       const data = await response.json();
-      detail = data.detail ?? detail;
+      detail = formatDetail(data.detail) ?? detail;
     } catch {
       // response body wasn't JSON - keep the generic status text.
     }

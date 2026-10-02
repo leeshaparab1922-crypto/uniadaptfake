@@ -1,15 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
 import { describe, expect, it, vi } from "vitest";
 
 import App from "../App";
+import { store } from "../store";
 
 function renderApp() {
   const queryClient = new QueryClient();
   return render(
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>,
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </Provider>,
   );
 }
 
@@ -57,7 +61,13 @@ describe("App role-gated rendering", () => {
 
   it("shows only the read-only subject list (no mutate controls) for a STUDENT user", () => {
     mockUseAuth.mockReturnValue({
-      user: { id: "2", email: "s@example.com", full_name: "Student", role: "STUDENT", is_active: true },
+      user: {
+        id: "2",
+        email: "s@example.com",
+        full_name: "Student",
+        role: "STUDENT",
+        is_active: true,
+      },
       isLoading: false,
       isAuthenticated: true,
     });
@@ -70,7 +80,13 @@ describe("App role-gated rendering", () => {
 
   it("shows a placeholder (no admin/student mutate controls) for a TEACHER user", () => {
     mockUseAuth.mockReturnValue({
-      user: { id: "3", email: "t@example.com", full_name: "Teacher", role: "TEACHER", is_active: true },
+      user: {
+        id: "3",
+        email: "t@example.com",
+        full_name: "Teacher",
+        role: "TEACHER",
+        is_active: true,
+      },
       isLoading: false,
       isAuthenticated: true,
     });

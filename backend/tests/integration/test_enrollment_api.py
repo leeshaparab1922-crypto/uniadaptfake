@@ -143,3 +143,24 @@ def test_student_enrollment_mutation_forbidden(client, db_session):
 
     count_before = db_session.query(Enrollment).count()
     assert count_before == 1  # unchanged by the forbidden attempt
+
+
+def test_promotion_rejects_non_positive_target_semester(client, db_session):
+    """to_semester_no must be > 0 (server-side, mirrors the UI min)."""
+    _full_setup(db_session)
+    _login(client, "admin-enroll-setup@example.com", "x")
+    headers = _csrf_headers(client)
+    uid = "00000000-0000-0000-0000-000000000001"
+    for bad in (0, -1):
+        payload = {
+            "student_ids": [uid],
+            "to_batch_id": uid,
+            "to_semester_no": bad,
+            "to_section_id": uid,
+        }
+        assert client.post(
+            "/admin/enrollments/promotion/preview", json=payload, headers=headers
+        ).status_code == 422
+        assert client.post(
+            "/admin/enrollments/promotion/confirm", json=payload, headers=headers
+        ).status_code == 422

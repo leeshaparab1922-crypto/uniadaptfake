@@ -102,13 +102,13 @@ def seed(db: Session) -> None:
         sections[name] = section
 
     teacher = _get_or_create_user(
-        db, email="teacher.demo@uniadapt.test", full_name="Demo Teacher", role=UserRole.TEACHER
+        db, email="teacher.demo@example.com", full_name="Demo Teacher", role=UserRole.TEACHER
     )
     admin_user = _get_or_create_user(
-        db, email="admin.demo@uniadapt.test", full_name="Demo Admin", role=UserRole.ADMIN
+        db, email="admin.demo@example.com", full_name="Demo Admin", role=UserRole.ADMIN
     )
     _get_or_create_user(
-        db, email="student.demo@uniadapt.test", full_name="Demo Student", role=UserRole.STUDENT
+        db, email="student.demo@example.com", full_name="Demo Student", role=UserRole.STUDENT
     )
 
     elective_group = db.scalar(

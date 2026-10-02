@@ -17,6 +17,20 @@ class StudentOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class StudentListItemOut(StudentOut):
+    """Admin list row: StudentOut plus the linked account's identity."""
+
+    email: str
+    full_name: str
+
+
+class StudentListOut(BaseModel):
+    items: list[StudentListItemOut]
+    total: int
+    limit: int
+    offset: int
+
+
 class ImportRowErrorOut(BaseModel):
     row_number: int
     reason: str
