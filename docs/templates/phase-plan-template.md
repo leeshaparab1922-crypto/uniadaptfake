@@ -43,6 +43,10 @@ Map tests to the phase's Expected Demo bar (Section 43) and to the relevant AC-*
 
 If this phase touches Sections 23 (Mastery Score), 24 (Engagement Score), or 25 (Adaptive Study Planner), state so explicitly here and note that these formulas must be implemented exactly as specified, not approximated.
 
+## Decisions Applied
+
+List every Accepted ADR in `docs/decisions/` whose "Affects" line includes this phase, and how the plan follows it. New questions that need a durable decision go under Risks as *proposed* ADRs.
+
 ## Risks & Open Questions
 
 ## Approval

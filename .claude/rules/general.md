@@ -50,6 +50,15 @@ human decision first, not an in-the-moment addition.
 - See `.claude/rules/backend.md` and `.claude/rules/frontend.md` for
   tool-specific detail (pytest vs. Vitest, coverage tooling, etc.).
 
+## Recorded decisions (ADRs)
+
+Project decisions the SRS leaves open are recorded as ADRs in
+`docs/decisions/` (index: `docs/decisions/README.md`). Accepted ADRs are
+binding for every agent and every phase: follow them, don't re-decide them,
+and treat a violation as a blocking finding. ADRs never override the SRS.
+Changing a decision requires a new, human-approved ADR that supersedes the
+old one — never an in-place edit.
+
 ## Security baseline
 
 SRS Section 36 (NFR-SEC-004..016) governs authentication, secret handling,
