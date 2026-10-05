@@ -1,0 +1,305 @@
+{
+ "description": "Labelled Topic pairs for validating the 0.92 duplicate threshold (plan P-7). Text format matches curriculum_service.topic_text: 'Name: outcome' is embedded as 'Name\noutcome'.",
+ "pairs": [
+  {
+   "a": "Binary Search Trees: Implement insertion and deletion in a BST",
+   "b": "BST operations: insert and delete nodes in a binary search tree",
+   "duplicate": true
+  },
+  {
+   "a": "Linked Lists: Explain singly linked list storage",
+   "b": "Singly linked lists: describe how nodes are stored with pointers",
+   "duplicate": true
+  },
+  {
+   "a": "Stacks: Apply stack operations push and pop",
+   "b": "Stack data structure: use push and pop operations",
+   "duplicate": true
+  },
+  {
+   "a": "Queues: Implement a circular queue with arrays",
+   "b": "Circular queue: array-based implementation",
+   "duplicate": true
+  },
+  {
+   "a": "Hashing: Resolve collisions using chaining",
+   "b": "Hash tables: collision resolution by separate chaining",
+   "duplicate": true
+  },
+  {
+   "a": "Graph Traversal: Perform breadth-first search",
+   "b": "BFS: breadth first traversal of a graph",
+   "duplicate": true
+  },
+  {
+   "a": "Graph Traversal: Perform depth-first search",
+   "b": "DFS: depth first traversal of a graph",
+   "duplicate": true
+  },
+  {
+   "a": "Sorting: Analyze the time complexity of merge sort",
+   "b": "Merge sort: time complexity analysis",
+   "duplicate": true
+  },
+  {
+   "a": "Sorting: Implement quick sort with partitioning",
+   "b": "Quick sort: partition-based sorting implementation",
+   "duplicate": true
+  },
+  {
+   "a": "Heaps: Build a max heap and perform heapify",
+   "b": "Max heap construction and the heapify operation",
+   "duplicate": true
+  },
+  {
+   "a": "AVL Trees: Perform rotations to balance a tree",
+   "b": "Balancing AVL trees using rotations",
+   "duplicate": true
+  },
+  {
+   "a": "Dijkstra: Compute single-source shortest paths",
+   "b": "Single source shortest path using Dijkstra's algorithm",
+   "duplicate": true
+  },
+  {
+   "a": "Minimum Spanning Tree: Apply Kruskal's algorithm",
+   "b": "Kruskal algorithm for minimum spanning trees",
+   "duplicate": true
+  },
+  {
+   "a": "Recursion: Write recursive solutions to problems",
+   "b": "Writing recursive functions to solve problems",
+   "duplicate": true
+  },
+  {
+   "a": "Asymptotic Notation: Use Big-O to describe growth",
+   "b": "Big-O notation for describing algorithm growth rates",
+   "duplicate": true
+  },
+  {
+   "a": "Dynamic Programming: Solve the knapsack problem",
+   "b": "The 0/1 knapsack problem with dynamic programming",
+   "duplicate": true
+  },
+  {
+   "a": "Normalization: Convert relations to third normal form",
+   "b": "Converting a relation to 3NF through normalization",
+   "duplicate": true
+  },
+  {
+   "a": "SQL Joins: Write inner and outer joins",
+   "b": "Inner joins and outer joins in SQL queries",
+   "duplicate": true
+  },
+  {
+   "a": "Transactions: Explain ACID properties",
+   "b": "ACID properties of database transactions",
+   "duplicate": true
+  },
+  {
+   "a": "Process Scheduling: Compare FCFS and round robin",
+   "b": "FCFS versus round-robin CPU scheduling",
+   "duplicate": true
+  },
+  {
+   "a": "Deadlocks: Detect deadlock using a resource graph",
+   "b": "Deadlock detection with resource allocation graphs",
+   "duplicate": true
+  },
+  {
+   "a": "Paging: Explain how paging maps virtual memory",
+   "b": "Virtual memory mapping through paging",
+   "duplicate": true
+  },
+  {
+   "a": "TCP: Describe the three-way handshake",
+   "b": "The TCP three way handshake explained",
+   "duplicate": true
+  },
+  {
+   "a": "IP Addressing: Compute subnets from a mask",
+   "b": "Calculating subnets using a subnet mask",
+   "duplicate": true
+  },
+  {
+   "a": "Finite Automata: Design a DFA for a language",
+   "b": "Designing deterministic finite automata for a language",
+   "duplicate": true
+  },
+  {
+   "a": "Context Free Grammars: Derive strings from a grammar",
+   "b": "Deriving strings using a context free grammar",
+   "duplicate": true
+  },
+  {
+   "a": "Pipelining: Identify pipeline hazards",
+   "b": "Hazards in an instruction pipeline",
+   "duplicate": true
+  },
+  {
+   "a": "Cache Memory: Calculate hit ratio and access time",
+   "b": "Computing cache hit ratio and effective access time",
+   "duplicate": true
+  },
+  {
+   "a": "Probability: Apply Bayes theorem",
+   "b": "Using Bayes' theorem to compute probabilities",
+   "duplicate": true
+  },
+  {
+   "a": "Eigenvalues: Compute eigenvalues of a matrix",
+   "b": "Calculating the eigenvalues of a square matrix",
+   "duplicate": true
+  },
+  {
+   "a": "Binary Search Trees: Implement insertion and deletion in a BST",
+   "b": "AVL Trees: Perform rotations to balance a tree",
+   "duplicate": false
+  },
+  {
+   "a": "Stacks: Apply stack operations push and pop",
+   "b": "Queues: Implement a circular queue with arrays",
+   "duplicate": false
+  },
+  {
+   "a": "Graph Traversal: Perform breadth-first search",
+   "b": "Graph Traversal: Perform depth-first search",
+   "duplicate": false
+  },
+  {
+   "a": "Sorting: Analyze the time complexity of merge sort",
+   "b": "Sorting: Implement quick sort with partitioning",
+   "duplicate": false
+  },
+  {
+   "a": "Hashing: Resolve collisions using chaining",
+   "b": "Hashing: Resolve collisions using open addressing",
+   "duplicate": false
+  },
+  {
+   "a": "Heaps: Build a max heap and perform heapify",
+   "b": "Heap sort: Sort an array using a heap",
+   "duplicate": false
+  },
+  {
+   "a": "Dijkstra: Compute single-source shortest paths",
+   "b": "Bellman-Ford: Handle negative edge weights",
+   "duplicate": false
+  },
+  {
+   "a": "Minimum Spanning Tree: Apply Kruskal's algorithm",
+   "b": "Minimum Spanning Tree: Apply Prim's algorithm",
+   "duplicate": false
+  },
+  {
+   "a": "Linked Lists: Explain singly linked list storage",
+   "b": "Doubly linked lists: Insert and delete with two pointers",
+   "duplicate": false
+  },
+  {
+   "a": "Recursion: Write recursive solutions to problems",
+   "b": "Iteration: Convert recursion into loops",
+   "duplicate": false
+  },
+  {
+   "a": "Dynamic Programming: Solve the knapsack problem",
+   "b": "Greedy algorithms: Solve fractional knapsack",
+   "duplicate": false
+  },
+  {
+   "a": "Normalization: Convert relations to third normal form",
+   "b": "Indexing: Build B-tree indexes for fast lookup",
+   "duplicate": false
+  },
+  {
+   "a": "SQL Joins: Write inner and outer joins",
+   "b": "SQL Aggregation: Use GROUP BY and HAVING",
+   "duplicate": false
+  },
+  {
+   "a": "Transactions: Explain ACID properties",
+   "b": "Concurrency control: Apply two-phase locking",
+   "duplicate": false
+  },
+  {
+   "a": "Process Scheduling: Compare FCFS and round robin",
+   "b": "Memory allocation: Compare first fit and best fit",
+   "duplicate": false
+  },
+  {
+   "a": "Deadlocks: Detect deadlock using a resource graph",
+   "b": "Semaphores: Solve producer consumer synchronisation",
+   "duplicate": false
+  },
+  {
+   "a": "Paging: Explain how paging maps virtual memory",
+   "b": "Segmentation: Explain segment tables",
+   "duplicate": false
+  },
+  {
+   "a": "TCP: Describe the three-way handshake",
+   "b": "UDP: Explain connectionless datagram delivery",
+   "duplicate": false
+  },
+  {
+   "a": "IP Addressing: Compute subnets from a mask",
+   "b": "Routing: Compare distance vector and link state",
+   "duplicate": false
+  },
+  {
+   "a": "Finite Automata: Design a DFA for a language",
+   "b": "Turing Machines: Design a machine for a language",
+   "duplicate": false
+  },
+  {
+   "a": "Context Free Grammars: Derive strings from a grammar",
+   "b": "Regular Expressions: Write expressions for patterns",
+   "duplicate": false
+  },
+  {
+   "a": "Pipelining: Identify pipeline hazards",
+   "b": "Cache Memory: Calculate hit ratio and access time",
+   "duplicate": false
+  },
+  {
+   "a": "Probability: Apply Bayes theorem",
+   "b": "Random variables: Compute expectation and variance",
+   "duplicate": false
+  },
+  {
+   "a": "Eigenvalues: Compute eigenvalues of a matrix",
+   "b": "Matrix inversion: Find the inverse using Gauss-Jordan",
+   "duplicate": false
+  },
+  {
+   "a": "Big-O notation for describing algorithm growth rates",
+   "b": "Space complexity: Measure memory used by an algorithm",
+   "duplicate": false
+  },
+  {
+   "a": "Lexical Analysis: Tokenize source code",
+   "b": "Syntax Analysis: Build a parse tree",
+   "duplicate": false
+  },
+  {
+   "a": "Supervised learning: Train a linear regression model",
+   "b": "Unsupervised learning: Cluster data with k-means",
+   "duplicate": false
+  },
+  {
+   "a": "Encapsulation: Hide state behind class interfaces",
+   "b": "Inheritance: Reuse behaviour through subclassing",
+   "duplicate": false
+  },
+  {
+   "a": "Operational amplifiers: Design an inverting amplifier",
+   "b": "Diodes: Analyze a half-wave rectifier",
+   "duplicate": false
+  },
+  {
+   "a": "Fourier series: Expand a periodic function",
+   "b": "Laplace transforms: Solve differential equations",
+   "duplicate": false
+  }
+ ]
+}

@@ -28,3 +28,11 @@ Rules:
 | [0010](ADR-0010-supporting-libraries-vite-dotenv-pyjwt.md) | Allow Vite, python-dotenv, and PyJWT as supporting libraries | Accepted | 1, all later phases |
 | [0011](ADR-0011-audit-every-admin-mutation.md) | Every Admin create/update/delete writes an audit_logs row | Accepted | 1, all later phases |
 | [0012](ADR-0012-admin-only-password-reset.md) | Password reset issued by Admin only (no self-service) | Accepted | 1 |
+| [0013](ADR-0013-ocr-engine.md) | OCR engine for scanned PDF pages (Tesseract via pytesseract) | Accepted | 2 |
+| [0014](ADR-0014-document-parsers.md) | Document parsers: pdfplumber/pypdfium2, python-pptx, python-docx, stdlib UTF-8 | Accepted | 2, 8 |
+| [0015](ADR-0015-embedding-model-dimension-tokenizer.md) | Embedding model BAAI/bge-m3, vector(1024), model's own tokenizer for chunking | Accepted | 2, 3, 8 |
+| [0016](ADR-0016-curriculum-agent-llm-provider-model.md) | Curriculum Agent: Anthropic adapter first, default model claude-opus-5-5 | Accepted | 2, later agent phases |
+| [0017](ADR-0017-prompt-registry-location.md) | Prompt registry: repo TOML files synced to immutable prompt_versions table | Accepted | 2, 3, 5, 8, 9 |
+| [0018](ADR-0018-minio-bucket-object-layout.md) | MinIO: one private bucket, ID-hierarchical write-once keys | Accepted | 2, 8, 9 |
+| [0019](ADR-0019-supporting-libraries-minio-pgvector-pillow.md) | Allow minio SDK, pgvector (Python), Pillow, and minio/mc image; numpy not a direct dependency | Accepted | 2, later phases |
+| [0020](ADR-0020-duplicate-threshold-0-72-for-bge-m3.md) | Duplicate-Topic threshold 0.72 for bge-m3 (0.92 failed validation) | Accepted | 2, 3 |

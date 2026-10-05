@@ -37,3 +37,12 @@ class ConflictError(DomainError):
 
 class RateLimitedError(DomainError):
     """Caller exceeded a configured rate limit (NFR-SEC-016). Maps to 429."""
+
+
+class ServiceUnavailableError(DomainError):
+    """A required backing service is missing or misconfigured. Maps to 503. The message is
+    generic; configuration details are logged, never returned (NFR-SEC-011)."""
+
+
+class PayloadTooLargeError(DomainError):
+    """Upload exceeds the configured size limit (SRS Section 17: 25 MB). Maps to 413."""

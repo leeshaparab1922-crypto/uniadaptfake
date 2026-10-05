@@ -26,6 +26,10 @@ vi.mock("../api/enrollmentApi", () => ({
   useMyEnrollments: () => ({ data: [], isLoading: false, isError: false }),
 }));
 
+vi.mock("../api/contentApi", () => ({
+  useMySubjects: () => ({ data: [], isLoading: false, isError: false }),
+}));
+
 vi.mock("../api/authApi", () => ({
   useMe: () => ({ data: null, isLoading: false, isError: false }),
   useLogin: () => ({ mutate: vi.fn(), isPending: false, isError: false }),
@@ -78,7 +82,7 @@ describe("App role-gated rendering", () => {
     expect(screen.queryAllByRole("button")).toHaveLength(1); // only the "Log out" button in TopBar
   });
 
-  it("shows a placeholder (no admin/student mutate controls) for a TEACHER user", () => {
+  it("shows the teacher shell (no admin/student mutate controls) for a TEACHER user", () => {
     mockUseAuth.mockReturnValue({
       user: {
         id: "3",

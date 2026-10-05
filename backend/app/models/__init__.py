@@ -3,9 +3,13 @@ autogenerate and for `Base.metadata.create_all()` in tests."""
 
 from app.models import (  # noqa: F401
     academic_structure,
+    ai,
     audit_log,
     auth_tokens,
     calendar,
+    content,
+    curriculum,
+    embedding_config,
     enrollment,
     student,
     subject,
