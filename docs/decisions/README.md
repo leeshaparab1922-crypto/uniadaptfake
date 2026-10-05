@@ -36,3 +36,4 @@ Rules:
 | [0018](ADR-0018-minio-bucket-object-layout.md) | MinIO: one private bucket, ID-hierarchical write-once keys | Accepted | 2, 8, 9 |
 | [0019](ADR-0019-supporting-libraries-minio-pgvector-pillow.md) | Allow minio SDK, pgvector (Python), Pillow, and minio/mc image; numpy not a direct dependency | Accepted | 2, later phases |
 | [0020](ADR-0020-duplicate-threshold-0-72-for-bge-m3.md) | Duplicate-Topic threshold 0.72 for bge-m3 (0.92 failed validation) | Accepted | 2, 3 |
+| [0021](ADR-0021-minio-image-from-conda-forge-packages.md) | Build the MinIO image from checksum-pinned conda-forge packages (official images removed) | Proposed | all phases (storage), CI |

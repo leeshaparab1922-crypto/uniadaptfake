@@ -24,8 +24,12 @@ services:
     ports:
       - "6379:6379"
 
+  # The official minio/minio and minio/mc images are gone (MinIO is archived upstream). This image
+  # is built from checksum-pinned conda-forge MinIO packages (ADR-0021), and also provides `mc`.
   minio:
-    image: minio/minio:latest
+    build:
+      context: ./infra/minio
+    image: uniadapt/minio:2025.10.15
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
@@ -36,7 +40,7 @@ services:
     volumes:
       - minio_data:/data
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/ready"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -44,7 +48,9 @@ services:
   # One-shot ADR-0018 bootstrap: private bucket(s) + scoped service credential (ADR-0019).
   # MINIO_APP_SECRET_KEY has no committed default: set it in the repo-root .env first.
   minio-init:
-    image: minio/mc
+    build:
+      context: ./infra/minio
+    image: uniadapt/minio:2025.10.15
     depends_on:
       minio:
         condition: service_healthy

@@ -3,7 +3,7 @@
 name: backend-tests
 on:
   pull_request:
-    paths: ["backend/**", "docker-compose.yml", ".github/workflows/backend-tests.yml"]
+    paths: ["backend/**", "infra/**", "docker-compose.yml", ".github/workflows/backend-tests.yml"]
   workflow_dispatch:
 
 jobs:
