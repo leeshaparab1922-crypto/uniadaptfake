@@ -1,6 +1,6 @@
 {
-  "current_phase": 1,
-  "phase_name": "Foundation",
+  "current_phase": 2,
+  "phase_name": "Ingestion & Curriculum",
   "status": "shipped",
   "phases": [
     {
@@ -29,12 +29,12 @@
       "dependencies": [
         "Phase 1 SubjectInstances/Teachers"
       ],
-      "status": "verified",
+      "status": "shipped",
       "plan_path": "docs/phases/phase-2-ingestion-curriculum/plan.md",
       "verification_report_path": "docs/phases/phase-2-ingestion-curriculum/verification-report.md",
       "implemented_at": "2026-10-04T08:11:12Z",
       "verified_at": "2026-10-05T04:33:00Z",
-      "shipped_pr": null,
+      "shipped_pr": "https://github.com/leeshaparab1922-crypto/uniadaptfake/pull/2",
       "plan_approved_at": "2026-10-02",
       "approval_scope": "Slice 2A approved 2026-10-02 and accepted 2026-10-04; slice 2B approved 2026-10-04 with human decisions P-3, P-7, P-10, P-14, P-15 and A-4..A-7 accepted as recommended (recorded in the plan Approval section).",
       "slice_2a_implemented_at": "2026-10-02",
