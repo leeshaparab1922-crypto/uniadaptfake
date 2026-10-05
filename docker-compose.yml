@@ -1,10 +1,7 @@
-# UniAdapt AI - Phase 1 orchestration.
+# UniAdapt AI - orchestration (Phase 1 foundation + Phase 2 slice 2A ingestion).
 #
-# Phase 1's application code only truly exercises `backend` and `postgres`.
-# `redis`, `minio`, and `celery` are provisioned here for forward
-# compatibility with later phases per Section 5's fixed stack, and are not
-# yet exercised by any Phase 1 endpoint beyond `rate_limit.py`'s Redis
-# client construction.
+# Phase 2 slice 2A uses `postgres` (pgvector), `minio` (+ the one-shot `minio-init`),
+# `redis` (rate limiting and the Celery broker), and `celery` (ingestion worker).
 services:
   postgres:
     image: pgvector/pgvector:pg15
@@ -27,32 +24,80 @@ services:
     ports:
       - "6379:6379"
 
+  # The official minio/minio and minio/mc images are gone (MinIO is archived upstream). This image
+  # is built from checksum-pinned conda-forge MinIO packages (ADR-0021), and also provides `mc`.
   minio:
-    image: minio/minio:latest
+    build:
+      context: ./infra/minio
+    image: uniadapt/minio:2025.10.15
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
       - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot ADR-0018 bootstrap: private bucket(s) + scoped service credential (ADR-0019).
+  # MINIO_APP_SECRET_KEY has no committed default: set it in the repo-root .env first.
+  minio-init:
+    build:
+      context: ./infra/minio
+    image: uniadapt/minio:2025.10.15
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ENDPOINT_URL: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-uniadapt-content}
+      MINIO_APP_ACCESS_KEY: ${MINIO_APP_ACCESS_KEY:-uniadapt-app}
+      MINIO_APP_SECRET_KEY: ${MINIO_APP_SECRET_KEY:?Set MINIO_APP_SECRET_KEY in the repo-root .env}
+      # Optional test bucket with its own credential (created only when the secret is set).
+      MINIO_TEST_BUCKET: ${TEST_MINIO_BUCKET:-uniadapt-content-test}
+      MINIO_TEST_ACCESS_KEY: ${TEST_MINIO_ACCESS_KEY:-uniadapt-test}
+      MINIO_TEST_SECRET_KEY: ${TEST_MINIO_SECRET_KEY:-}
+    volumes:
+      - ./backend/scripts/bootstrap_minio.sh:/bootstrap_minio.sh:ro
+    entrypoint: ["/bin/sh", "/bootstrap_minio.sh"]
+    restart: "no"
 
   backend:
     build:
       context: ./backend
     env_file:
       - .env
+    # Inside the compose network "localhost" is the container itself, so the service
+    # addresses from .env (written for running on the host) are overridden here.
+    environment:
+      DATABASE_URL: postgresql+psycopg://uniadapt:uniadapt@postgres:5432/uniadapt
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      MINIO_ENDPOINT: minio:9000
+      # The app never uses the MinIO root credential (ADR-0018, NFR-SEC-013): blank it here
+      # even though env_file passes the whole .env through.
+      MINIO_ROOT_USER: ""
+      MINIO_ROOT_PASSWORD: ""
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
+      minio-init:
+        condition: service_completed_successfully
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - hf_cache:/hf-cache
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   celery:
@@ -60,11 +105,27 @@ services:
       context: ./backend
     env_file:
       - .env
+    # Inside the compose network "localhost" is the container itself, so the service
+    # addresses from .env (written for running on the host) are overridden here.
+    environment:
+      DATABASE_URL: postgresql+psycopg://uniadapt:uniadapt@postgres:5432/uniadapt
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      MINIO_ENDPOINT: minio:9000
+      # The app never uses the MinIO root credential (ADR-0018, NFR-SEC-013): blank it here
+      # even though env_file passes the whole .env through.
+      MINIO_ROOT_USER: ""
+      MINIO_ROOT_PASSWORD: ""
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio-init:
+        condition: service_completed_successfully
     volumes:
       - ./backend:/app
+      - hf_cache:/hf-cache
     command: celery -A app.workers worker --loglevel=info
 
   frontend:
@@ -81,3 +142,4 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  hf_cache:

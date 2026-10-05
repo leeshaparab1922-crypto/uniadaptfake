@@ -1,0 +1,8 @@
+{
+  "topics": [
+    {"key": "a", "name": "Arrays", "unit_order": 1, "outcomes": ["Implement array operations"], "bloom_level": "APPLY", "est_hours": 3,
+     "prerequisites": [{"prereq_ref": "b", "confidence": 0.5}]},
+    {"key": "b", "name": "Linked Lists", "unit_order": 1, "outcomes": ["Explain pointer-based storage"], "bloom_level": "UNDERSTAND", "est_hours": 3,
+     "prerequisites": [{"prereq_ref": "a", "confidence": 0.5}]}
+  ]
+}

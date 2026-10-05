@@ -9,12 +9,14 @@ dependency only proves *who* is calling and *what role* they hold.
 
 from __future__ import annotations
 
+import logging
 import uuid
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
+from app.core.errors import ServiceUnavailableError
 from app.core.rate_limit import RateLimiter, get_rate_limiter
 from app.core.security import (
     ACCESS_COOKIE_NAME,
@@ -24,6 +26,14 @@ from app.core.security import (
 )
 from app.db.session import get_db
 from app.models.user import User, UserRole
+from app.services.curriculum_service import CurriculumQueue
+from app.services.ingestion.ports import Embedder, IngestionQueue, ObjectStore
+
+logger = logging.getLogger(__name__)
+
+STORAGE_UNAVAILABLE_MESSAGE = (
+    "File storage is not available right now. Ask the administrator to check the server setup."
+)
 
 DbSession = Annotated[Session, Depends(get_db)]
 
@@ -58,6 +68,54 @@ def get_current_user(request: Request, db: DbSession) -> User:
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+def get_object_store() -> ObjectStore:
+    """MinIO object store (ADR-0018). Overridable in tests via `dependency_overrides`.
+
+    A missing scoped credential is a server configuration problem: it is logged in full and
+    the Teacher gets a generic 503, never the setting names (finding N6, NFR-SEC-011)."""
+    from app.integrations.object_store import MinioObjectStore
+
+    try:
+        return MinioObjectStore.from_settings()
+    except ValueError:
+        logger.exception("MinIO object store is not configured")
+        raise ServiceUnavailableError(STORAGE_UNAVAILABLE_MESSAGE) from None
+
+
+def get_ingestion_queue() -> IngestionQueue:
+    """Celery-backed queue. Overridable in tests (recorder / eager execution)."""
+    from app.workers.ingestion_tasks import CeleryIngestionQueue
+
+    return CeleryIngestionQueue()
+
+
+_embedder: Embedder | None = None
+
+
+def get_embedder() -> Embedder:
+    """Local bge-m3 embedder (ADR-0015), loaded lazily once per process; the model is only
+    read when a Topic actually needs embedding. Overridable in tests."""
+    global _embedder
+    if _embedder is None:
+        from app.integrations.embedding import BgeM3Embedder
+
+        _embedder = BgeM3Embedder()
+    return _embedder
+
+
+def get_curriculum_queue() -> CurriculumQueue:
+    """Celery-backed queue for curriculum generation. Overridable in tests."""
+    from app.workers.curriculum_tasks import CeleryCurriculumQueue
+
+    return CeleryCurriculumQueue()
+
+
+ObjectStoreDep = Annotated[ObjectStore, Depends(get_object_store)]
+EmbedderDep = Annotated[Embedder, Depends(get_embedder)]
+CurriculumQueueDep = Annotated[CurriculumQueue, Depends(get_curriculum_queue)]
+IngestionQueueDep = Annotated[IngestionQueue, Depends(get_ingestion_queue)]
 
 
 def require_role(*roles: UserRole):

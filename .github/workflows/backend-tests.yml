@@ -1,0 +1,47 @@
+# Backend tests. pgvector/MinIO tests run against the docker-compose services (never SQLite).
+# The workflow file is committed locally only; publishing it is a human/shipper step.
+name: backend-tests
+on:
+  pull_request:
+    paths: ["backend/**", "infra/**", "docker-compose.yml", ".github/workflows/backend-tests.yml"]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://uniadapt:uniadapt@localhost:5432/uniadapt_test
+      TEST_MINIO_ENDPOINT: localhost:9000
+      TEST_MINIO_ACCESS_KEY: uniadapt-test
+      TEST_MINIO_ROOT_USER: minioadmin
+      TEST_MINIO_ROOT_PASSWORD: minioadmin
+      TEST_MINIO_BUCKET: uniadapt-content-test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create .env from the example with per-run MinIO app and test secrets
+        run: |
+          cp .env.example .env
+          APP_SECRET="$(openssl rand -hex 24)"
+          TEST_SECRET="$(openssl rand -hex 24)"
+          echo "::add-mask::$APP_SECRET"
+          echo "::add-mask::$TEST_SECRET"
+          sed -i "s/^MINIO_APP_SECRET_KEY=.*/MINIO_APP_SECRET_KEY=$APP_SECRET/" .env
+          sed -i "s/^TEST_MINIO_SECRET_KEY=.*/TEST_MINIO_SECRET_KEY=$TEST_SECRET/" .env
+          echo "TEST_MINIO_SECRET_KEY=$TEST_SECRET" >> "$GITHUB_ENV"
+      - name: Start Postgres (pgvector) and MinIO
+        run: |
+          docker compose up -d --wait postgres minio
+          docker compose run --rm minio-init
+      - name: Build backend image (Tesseract + CPU torch)
+        run: docker compose build backend
+      - name: Run tests inside the backend image (hf_model / llm_live excluded)
+        run: |
+          docker compose run --rm --no-deps \
+            -e TEST_DATABASE_URL=postgresql+psycopg://uniadapt:uniadapt@postgres:5432/uniadapt_test \
+            -e TEST_MINIO_ENDPOINT=minio:9000 \
+            -e TEST_MINIO_ACCESS_KEY -e TEST_MINIO_SECRET_KEY \
+            -e TEST_MINIO_ROOT_USER -e TEST_MINIO_ROOT_PASSWORD -e TEST_MINIO_BUCKET \
+            backend sh -c 'pip install -e ".[dev]" && python -m pytest -m "not hf_model and not llm_live"'
+      - name: Deterministic-service coverage gate (NFR-TST-001, >= 80%)
+        run: |
+          docker compose run --rm --no-deps backend sh -c 'pip install -e ".[dev]" && python -m pytest -m "not pg and not minio and not tesseract and not hf_model and not llm_live" --cov-fail-under=0 -q && coverage report --include="app/services/ingestion_service.py,app/services/ingestion/*" --fail-under=80'

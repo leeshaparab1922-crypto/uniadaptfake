@@ -1,6 +1,6 @@
 {
-  "current_phase": 1,
-  "phase_name": "Foundation",
+  "current_phase": 2,
+  "phase_name": "Ingestion & Curriculum",
   "status": "shipped",
   "phases": [
     {
@@ -29,12 +29,19 @@
       "dependencies": [
         "Phase 1 SubjectInstances/Teachers"
       ],
-      "status": "not_started",
-      "plan_path": null,
-      "verification_report_path": null,
-      "implemented_at": null,
-      "verified_at": null,
-      "shipped_pr": null
+      "status": "shipped",
+      "plan_path": "docs/phases/phase-2-ingestion-curriculum/plan.md",
+      "verification_report_path": "docs/phases/phase-2-ingestion-curriculum/verification-report.md",
+      "implemented_at": "2026-10-04T08:11:12Z",
+      "verified_at": "2026-10-05T04:33:00Z",
+      "shipped_pr": "https://github.com/leeshaparab1922-crypto/uniadaptfake/pull/2",
+      "plan_approved_at": "2026-10-02",
+      "approval_scope": "Slice 2A approved 2026-10-02 and accepted 2026-10-04; slice 2B approved 2026-10-04 with human decisions P-3, P-7, P-10, P-14, P-15 and A-4..A-7 accepted as recommended (recorded in the plan Approval section).",
+      "slice_2a_implemented_at": "2026-10-02",
+      "slice_2a_note": "Slice 2A code and tests written 2026-10-02; verification findings B1, B2, M1-M5 and m1-m9 fixed 2026-10-04 (decisions recorded in the plan Approval section and ADR-0019). Times are date-only because the exact approval/implementation times were not recorded. Service-backed (pg/minio/tesseract/hf_model) tests written but not run here (no Docker on this machine; they run on another PC). Phase status intentionally NOT set to implemented: slice 2B not started.",
+      "slice_2a_fixes_at": "2026-10-04",
+      "slice_2b_implemented_at": "2026-10-04T08:11:12Z",
+      "implementation_note": "Both slices are written. The Docker-backed tests of BOTH slices (pg, minio, tesseract, hf_model; 2A: 155 tests, plus the 2B pg/hf_model tests) are written but have NOT been run: no Docker on the implementing machine. llm_live smoke test written, not run, no key used. Migrations 0002 and 0003 have never run on PostgreSQL. Run them on the Docker PC before verification."
     },
     {
       "phase": 3,

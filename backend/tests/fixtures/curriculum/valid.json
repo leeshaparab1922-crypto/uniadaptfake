@@ -1,0 +1,8 @@
+{
+  "topics": [
+    {"key": "a", "name": "Arrays", "unit_order": 1, "outcomes": ["Implement array operations"], "bloom_level": "Apply", "est_hours": 3,
+     "classification": "Core", "prerequisites": []},
+    {"key": "b", "name": "Binary Trees", "unit_order": 2, "outcomes": ["Traverse a binary tree"], "bloom_level": "ANALYZE", "est_hours": 4,
+     "classification": "Self-study", "prerequisites": [{"prereq_ref": "a", "confidence": 0.7}]}
+  ]
+}

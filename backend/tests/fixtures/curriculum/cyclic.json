@@ -1,0 +1,10 @@
+{
+  "topics": [
+    {"key": "a", "name": "Arrays", "unit_order": 1, "outcomes": ["Implement array operations"], "bloom_level": "APPLY", "est_hours": 3,
+     "classification": "CORE", "prerequisites": [{"prereq_ref": "b", "confidence": 0.8}]},
+    {"key": "b", "name": "Linked Lists", "unit_order": 1, "outcomes": ["Explain pointer-based storage"], "bloom_level": "UNDERSTAND", "est_hours": 3,
+     "classification": "CORE", "prerequisites": [{"prereq_ref": "a", "confidence": 0.4}]},
+    {"key": "c", "name": "Binary Trees", "unit_order": 2, "outcomes": ["Traverse a binary tree"], "bloom_level": "APPLY", "est_hours": 4,
+     "classification": "CORE", "prerequisites": [{"prereq_ref": "b", "confidence": 0.9}]}
+  ]
+}

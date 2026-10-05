@@ -1,4 +1,7 @@
-"""Celery worker registration. Empty in Phase 1 - provisioned for
-forward compatibility per Section 5's fixed stack; no Phase 1 FR requires
-an async task, so no tasks are defined yet.
-"""
+"""Celery worker package. `celery -A app.workers worker` resolves `app` below."""
+
+from app.workers.celery_app import celery_app
+
+app = celery_app
+
+__all__ = ["app", "celery_app"]
