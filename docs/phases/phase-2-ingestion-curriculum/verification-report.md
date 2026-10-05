@@ -260,7 +260,19 @@ None. (Initial D1 and D2 closed as above.) Open items 1, 2 and 4 need human acce
 
 Not shipped. No branch change, commit, push, PR or gh invocation.
 
-- Branch:
-- Commit(s):
-- PR URL:
-- Shipped at:
+- Branch: `phase-2-ingestion-curriculum` (stacked on `phase-1-foundation`, PR #1)
+- Commit(s): `3537d8e` (Phase 2), `00df905` (mark shipped), `8df04ce` (MinIO image / CI fix, ADR-0021)
+- PR URL: https://github.com/leeshaparab1922-crypto/uniadaptfake/pull/2
+- Shipped at: 2026-10-05 (open notes S-1 and MinIO accepted by the project owner)
+
+## Post-ship CI verification (2026-10-05)
+
+- **First CI runs** (`3537d8e`, `00df905`) failed before any test ran: `pull access denied for minio/minio`. The official MinIO images have been removed upstream.
+- **Fix** (`8df04ce`, ADR-0021, Proposed): `infra/minio/Dockerfile` builds `uniadapt/minio:2025.10.15` from checksum-pinned conda-forge `minio-server` 2025.10.15 and `minio-client` 2025.08.13 packages. `docker-compose.yml` uses it for `minio` and `minio-init`.
+- **CI run 37266930599** on `8df04ce`: **success** (job `tests`, 11m13s).
+  - Built the backend image: `python:3.11-slim-bookworm`, Tesseract `5.3.0-2` and `tesseract-ocr-eng 1:4.1.0-2` as pinned, CPU PyTorch.
+  - Built the MinIO image; the server reports commit `9e49d5e7a648`.
+  - Brought up PostgreSQL (`pgvector/pgvector:pg15`) and MinIO, and ran `minio-init`.
+  - `pytest -m "not hf_model and not llm_live"` inside the backend image: **713 passed, 5 deselected** (the 4 `hf_model` tests and 1 `llm_live` test, excluded by the workflow; the `hf_model` tests passed locally on real bge-m3). Coverage 96%.
+  - Deterministic-service coverage gate: 97% (required ≥ 80%). Passed.
+- **Open-item update:** item 4 (Docker image and compose build never run) is **closed** by this CI run. Still open: S-1 (live LLM request shape) and the MinIO archived-upstream risk (now also covered by ADR-0021, which is awaiting acceptance).
