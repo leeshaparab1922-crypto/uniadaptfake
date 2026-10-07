@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import CalendarTimetable from "../pages/admin/CalendarTimetable";
 import HierarchyManager from "../pages/admin/HierarchyManager";
-import PromotionTransfer from "../pages/admin/PromotionTransfer";
 import StudentImport from "../pages/admin/StudentImport";
 import SubjectCatalogue from "../pages/admin/SubjectCatalogue";
 import TeacherAssignment from "../pages/admin/TeacherAssignment";
@@ -13,7 +12,6 @@ const TABS = [
   { key: "teachers", label: "Teachers & Owners", Component: TeacherAssignment },
   { key: "students", label: "Student Import", Component: StudentImport },
   { key: "calendar", label: "Calendar & Timetable", Component: CalendarTimetable },
-  { key: "promotion", label: "Promotion / Transfer", Component: PromotionTransfer },
 ] as const;
 
 /**
