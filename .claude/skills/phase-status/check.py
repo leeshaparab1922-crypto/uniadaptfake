@@ -38,7 +38,7 @@ PHASE_DELIVERABLE_HINTS = {
 # never application code. Excluded so e.g. phase-planner-implementer.md
 # (contains "planner") or verification-report-template.md (contains
 # "report") don't get mistaken for a phase's actual deliverables.
-EXCLUDED_TOP_LEVEL = {".git", "node_modules", ".venv", "__pycache__", ".claude"}
+EXCLUDED_TOP_LEVEL = {".git", "node_modules", ".venv", "__pycache__", ".claude", ".github", ".agents", "SRS_Doc", "docs"}
 EXCLUDED_DOCS_SUBDIRS = {"templates", "phases"}
 
 

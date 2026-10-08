@@ -25,7 +25,7 @@ PHASE_DELIVERABLE_HINTS = {
     9: ["recommendation", "intervention", "report"],
 }
 
-EXCLUDED_TOP_LEVEL = {".git", "node_modules", ".venv", "__pycache__", ".agents", ".claude"}
+EXCLUDED_TOP_LEVEL = {".git", "node_modules", ".venv", "__pycache__", ".claude", ".github", ".agents", "SRS_Doc", "docs"}
 EXCLUDED_DOCS_SUBDIRS = {"templates", "phases"}
 
 

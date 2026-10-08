@@ -23,13 +23,13 @@ markers (including this section) is preserved as-is.
 
 <!-- BEGIN AUTO-GENERATED PHASE STATUS (update-claude-md skill) -->
 
-_Last regenerated: 2026-09-13T22:54:39_
+_Last regenerated: 2026-09-28T08:10:53_
 
-**Current phase:** 1 — Foundation (Not started)
+**Current phase:** 1 — Foundation (Shipped)
 
 | Phase | Name | Status | SRS Requirements | Dependencies | Plan | Verification | PR |
 |---|---|---|---|---|---|---|---|
-| 1 | Foundation | Not started | FR-AUTH-001..004, FR-ADM-001..007, FR-STU-001 | None | - | - | - |
+| 1 | Foundation | Shipped | FR-AUTH-001..004, FR-ADM-001..007, FR-STU-001 | None | [plan](docs/phases/phase-1-foundation/plan.md) | [report](docs/phases/phase-1-foundation/verification-report.md) | [PR](https://github.com/leeshaparab1922-crypto/uniadaptfake/pull/1) |
 | 2 | Ingestion & Curriculum | Not started | FR-CON-001..004, FR-CUR-001..004 | Phase 1 SubjectInstances/Teachers | - | - | - |
 | 3 | Assessment & Bank | Not started | FR-QB-001..005 | Phase 2 active Topics/content | - | - | - |
 | 4 | Coverage Tracker & Diagnostics | Not started | FR-COV-001..004, FR-DIA-001..006, FR-ADM-008, FR-STU-003 | Phase 3 READY bank | - | - | - |

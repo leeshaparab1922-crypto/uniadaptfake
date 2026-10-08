@@ -46,9 +46,10 @@ Phase 1 may adjust with justification documented in `plan.md`.
 
 ## Security-relevant frontend rules
 
-- JWT storage mechanism (localStorage vs. httpOnly cookie) is decided by
-  Phase 1's auth plan — but flag XSS exposure as a review point regardless
-  of which is chosen.
+- The JWT travels in an httpOnly, Secure, SameSite=Strict cookie with a
+  double-submit CSRF token (ADR-0001, `docs/decisions/`). Frontend code never
+  reads, stores, or logs the JWT, and sends `X-CSRF-Token` on every
+  state-changing request. Still flag XSS exposure as a review point.
 - Never log tokens or PII to the console in production builds.
 - Mirror the 25MB/MIME upload constraints client-side as a UX pre-check —
   this is never a substitute for server-side enforcement.
